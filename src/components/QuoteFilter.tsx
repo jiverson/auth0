@@ -2,8 +2,10 @@ import { IconButton, InputBase, Paper, Theme } from "@material-ui/core";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import SearchIcon from "@material-ui/icons/Search";
+import debounce from "lodash.debounce";
 import { inject, observer } from "mobx-react";
 import React, { Component } from "react";
+import { QUOTE_MIN_SEARCH } from "../constants";
 import QuoteStore from "../stores/QuoteStore";
 
 interface Props extends WithStyles<typeof styles> {
@@ -13,16 +15,29 @@ interface Props extends WithStyles<typeof styles> {
 @inject("store")
 @observer
 class QuoteFilter extends Component<Props> {
+  filterItem: any;
+
+  componentWillMount() {
+    const store = this.props.store!;
+    this.filterItem = debounce(({ target }) => {
+      store.filterItem("author", target.value);
+    }, 1000);
+  }
+
+  handleInputChange = (e) => {
+    if (e.target.value.length < QUOTE_MIN_SEARCH) {
+      return;
+    }
+    e.persist();
+    this.filterItem(e);
+  };
+
   render() {
     const { classes } = this.props;
-    const store = this.props.store!;
+
     return (
       <Paper className={classes.root} elevation={1}>
-        <InputBase
-          onChange={({ target }) => store.filterItem(target.value)}
-          className={classes.input}
-          placeholder="Filter by author..."
-        />
+        <InputBase onChange={this.handleInputChange} className={classes.input} placeholder="Filter by author..." />
         <IconButton className={classes.iconButton}>
           <SearchIcon />
         </IconButton>

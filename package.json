@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
+    "lodash.debounce": "^4.0.8",
     "lodash.deburr": "^4.1.0",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",

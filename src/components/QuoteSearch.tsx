@@ -23,7 +23,7 @@ class QuoteSearch extends Component<Props> {
           <SearchIcon />
         </div>
         <InputBase
-          onChange={({ target }) => store.searchItem(target.value)}
+          // onChange={({ target }) => store.search("id", target.value)}
           placeholder="Search…"
           classes={{
             root: classes.inputRoot,

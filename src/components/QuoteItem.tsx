@@ -20,7 +20,7 @@ class QuoteItem extends Component<Props> {
         {store.selectedQuote && (
           <div>
             <Typography variant="h4" gutterBottom>
-              {store.selectedQuote.authorName || `An ${QuoteModel.defaultAuthorName} author`} said...
+              {store.selectedQuote.authorName || `An ${QuoteModel.defaultAuthorName.toLowerCase()} author`} said...
             </Typography>
             <Typography variant="h6">"{store.selectedQuote.text}"</Typography>
           </div>

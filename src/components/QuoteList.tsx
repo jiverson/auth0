@@ -24,9 +24,13 @@ class QuoteList extends Component<Props> {
     // TODO: Else clear all selctions
   };
 
+  // TODO: FIX double search when pageSize is less
   loadMoreItems = async (startIndex, stopIndex) => {
     const { isNextPageLoading } = this.props.store!;
-    return await this.props.store!.loadQuotes();
+    // if (isNextPageLoading) {
+    //   return () => {};
+    // }
+    return await this.props.store!.loadMoreItems();
   };
 
   isItemLoaded = (index) => {

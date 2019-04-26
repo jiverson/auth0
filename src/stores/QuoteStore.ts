@@ -1,31 +1,16 @@
 import { action, observable } from "mobx";
-import queryString from "query-string";
 import QuoteModel from "../models/QuoteModel";
+import { loadAll, QuotesResponse, searchByAuthor, searchById, searchByText } from "../services";
 
-// const api = "http://localhost:3004/api/quotes";
-const api = "https://auth0-exercise-quotes-api.herokuapp.com/api/quotes";
-// GET /api/quotes?authorName=AlBeRt
-// GET /api/quotes?text=wAnT
-// GET /api/quotes?sortBy=-authorName,text
-// GET /api/quotes/:id
-
-type QuotesResponse = {
-  results: Array<QuoteModel>;
-  pagination: {
-    page: number;
-    pageSize: number;
-    pageCount: number;
-    rowCount: number;
-  };
-};
-
-export default class AppStore {
+export default class QuoteStore {
   @observable quotes: Array<QuoteModel> = [];
   @observable selectedQuote: QuoteModel;
   @observable rowCount: number;
 
-  hasNextPage = true;
+  hasNextPage = false;
   isNextPageLoading = true;
+  nextPage = -1;
+  loadMoreItems: any;
 
   constructor() {}
 
@@ -38,34 +23,59 @@ export default class AppStore {
   clearAll() {
     this.quotes = [];
     this.selectedQuote = null;
+    this.nextPage = -1;
+    this.hasNextPage = false;
+    this.loadMoreItems = () => {};
   }
 
   @action
-  editQuote(id: number, data: Partial<QuoteModel>) {
-    // TODO implement
-  }
-
-  @action
-  searchItem(value?: string) {
-    // TODO implement
-  }
-
-  @action
-  filterItem(value?: string) {
-    // TODO implement
-  }
-
-  async loadQuotes(params = { pageSize: 50 }): Promise<any> {
+  async search(by: "author" | "text" | "id", value?: string) {
+    if (!value) {
+      return;
+    }
     this.isNextPageLoading = true;
-    const response = await fetch(`${api}?${queryString.stringify(params)}`);
-    if (response.status !== 200) {
-      throw Error(response.status.toString());
+    let response: QuotesResponse;
+
+    switch (by) {
+      case "author":
+        response = await searchByAuthor(value, this.nextPage);
+        break;
+      case "text":
+        response = await searchByText(value, this.nextPage);
+        break;
+      case "id":
+        response = await searchById(value);
+        break;
     }
 
-    const { results, pagination }: QuotesResponse = await response.json();
+    this.parseResponse(response, this.quotes);
+    this.isNextPageLoading = false;
+  }
+
+  @action
+  async filterItem(by: "author" | "text" | "id", value?: string) {
+    this.clearAll();
+    this.loadMoreItems = () => this.search(by, value);
+    return this.loadMoreItems();
+  }
+
+  async loadItems() {
+    this.isNextPageLoading = true;
+    const response = await loadAll(this.nextPage);
+    this.parseResponse(response, this.quotes);
+    this.isNextPageLoading = false;
+  }
+
+  async loadQuotes(): Promise<any> {
+    this.loadMoreItems = () => this.loadItems();
+    return this.loadMoreItems();
+  }
+
+  parseResponse(response: QuotesResponse, list: Array<QuoteModel>) {
+    const { results, pagination } = response;
     this.rowCount = pagination.rowCount;
     this.hasNextPage = pagination.page < pagination.pageCount;
-    this.quotes = [...this.quotes].concat(results);
-    this.isNextPageLoading = false;
+    this.nextPage = this.hasNextPage ? pagination.page + 1 : pagination.page;
+    this.quotes = [...list].concat(results);
   }
 }
