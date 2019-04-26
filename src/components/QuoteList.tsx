@@ -8,8 +8,6 @@ import InfiniteLoader from "react-window-infinite-loader";
 import QuoteStore from "../stores/QuoteStore";
 import QuoteListItem, { DataType } from "./QuoteListItem";
 
-// https://react-window.now.sh/#/examples/list/memoized-list-items
-
 interface Props extends WithStyles<typeof styles> {
   store?: QuoteStore;
 }
@@ -28,7 +26,7 @@ class QuoteList extends Component<Props> {
 
   loadMoreItems = async (startIndex, stopIndex) => {
     const { isNextPageLoading } = this.props.store!;
-    return await this.props.store!.loadQuotes("foo");
+    return await this.props.store!.loadQuotes();
   };
 
   isItemLoaded = (index) => {
@@ -36,6 +34,7 @@ class QuoteList extends Component<Props> {
     return !hasNextPage || index < items.length;
   };
 
+  // TODO: Research if this is needed
   itemKey = (index, { items }) => {
     if (items[index]) {
       return items[index].id;
@@ -45,8 +44,14 @@ class QuoteList extends Component<Props> {
   };
 
   render() {
+    /* TODO: NTH
+     * Currently we assume not to know how many we got back from the server
+     * the reason is that if we actually use row count we are banging on the service
+     * if you decide to keep scrolling. There is implementation where you do not
+     * need to keep doing that but for now it will work.
+     * */
     const { classes } = this.props;
-    const { quotes: items, hasNextPage } = this.props.store!;
+    const { quotes: items, hasNextPage, rowCount } = this.props.store!;
     const itemData: DataType = { items, onItemSelect: this.handleSelectedItem };
     const itemCount = hasNextPage ? items.length + 1 : items.length;
 

@@ -49,3 +49,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 json-server --watch db.json --routes routes.json --port 3004 --delay 3000
 http://localhost:3004/api/quotes?authorName_like=fo
 ```
+
+### Performance
+
+[memoize list](https://react-window.now.sh/#/examples/list/memoized-list-items)

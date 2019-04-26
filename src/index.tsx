@@ -5,7 +5,7 @@ import App from "./components/App";
 import QuoteStore from "./stores/QuoteStore";
 
 const quoteStore = new QuoteStore();
-quoteStore.loadQuotes("foo");
+quoteStore.loadQuotes();
 
 const rootElement = document.getElementById("root");
 

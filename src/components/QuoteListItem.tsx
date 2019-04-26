@@ -16,6 +16,9 @@ interface Props extends WithStyles<typeof styles> {
   index: number;
 }
 
+/* TODO: NTH
+ * Add in a proper loading animation.
+ * */
 class QuoteListItem extends PureComponent<Props> {
   render() {
     const {
@@ -30,7 +33,7 @@ class QuoteListItem extends PureComponent<Props> {
         <ListItemText
           primaryTypographyProps={{ noWrap: true }}
           primary={item.text}
-          secondary={`— ${item.authorName}`}
+          secondary={`— ${item.authorName || QuoteModel.defaultAuthorName}`}
         />
       </ListItem>
     );

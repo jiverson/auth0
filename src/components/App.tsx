@@ -1,8 +1,7 @@
-import { AppBar, Divider, Drawer, IconButton, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Avatar, Divider, Drawer, Toolbar, Typography } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { inject, observer } from "mobx-react";
 import React, { Component } from "react";
 import QuoteStore from "../stores/QuoteStore";
@@ -50,9 +49,10 @@ class App extends Component<Props> {
           }}
         >
           <div className={classes.toolbarIcon}>
-            <IconButton>
-              <ChevronLeftIcon />
-            </IconButton>
+            <Avatar className={classes.avatar}>J</Avatar>
+            <Typography component="span" className={classes.inline} color="textPrimary">
+              Josh Iverson
+            </Typography>
           </div>
           <Divider />
           <Toolbar className={classes.toolbar}>
@@ -79,12 +79,16 @@ const styles = (theme: Theme) =>
     root: {
       display: "flex"
     },
+    avatar: {
+      margin: 10
+    },
+    inline: {
+      display: "inline"
+    },
     toolbarIcon: {
       display: "flex",
       alignItems: "center",
-      justifyContent: "flex-end",
       padding: "0 8px",
-      visibility: "hidden",
       ...theme.mixins.toolbar
     },
     appBarSpacer: theme.mixins.toolbar,
