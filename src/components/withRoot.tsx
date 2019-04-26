@@ -11,6 +11,7 @@ const theme = createMuiTheme({
     }
   },
   typography: {
+    fontFamily: ["Poppins", "sans-serif"].join(","),
     useNextVariants: true
   },
   palette: {
