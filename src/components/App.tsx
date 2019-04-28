@@ -1,37 +1,31 @@
-import { AppBar, Avatar, Divider, Drawer, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Button, Divider, Drawer, Toolbar, Typography } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import { inject, observer } from "mobx-react";
 import React, { Component } from "react";
+import AuthStore from "../stores/AuthStore";
 import QuoteStore from "../stores/QuoteStore";
+import Profile from "./Profile";
 import QuoteFilter from "./QuoteFilter";
 import QuoteItem from "./QuoteItem";
 import QuoteList from "./QuoteList";
-import QuoteSearch from "./QuoteSearch";
 import withRoot from "./withRoot";
 
 interface Props extends WithStyles<typeof styles> {
   store?: QuoteStore;
+  authStore?: AuthStore;
 }
 
-@inject("store")
+@inject("store", "authStore")
 @observer
 class App extends Component<Props> {
   allQuotes = [];
 
-  constructor(props: Props) {
-    super(props);
-    this.foo = this.foo.bind(this);
-  }
-
-  foo(value: string | null) {
-    console.log("1 --> foo", value); // DEBUG
-  }
-
   render() {
     const { classes } = this.props;
     const store = this.props.store!;
+    const { isAuthenticated, login } = this.props.authStore!;
     return (
       <div className={classes.root}>
         <AppBar position="absolute" className={classes.appbar}>
@@ -39,7 +33,12 @@ class App extends Component<Props> {
             <Typography variant="h6" color="inherit" noWrap className={classes.title}>
               do not "quote" me
             </Typography>
-            <QuoteSearch />
+            {isAuthenticated && <Button color="inherit">Log out</Button>}
+            {!isAuthenticated && (
+              <Button color="inherit" onClick={login.bind(this)}>
+                Login
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -48,12 +47,7 @@ class App extends Component<Props> {
             paper: classes.drawerPaper
           }}
         >
-          <div className={classes.toolbarIcon}>
-            <Avatar className={classes.avatar}>J</Avatar>
-            <Typography component="span" className={classes.inline} color="textPrimary">
-              Josh Iverson
-            </Typography>
-          </div>
+          <div className={classes.toolbarIcon}>{isAuthenticated && <Profile />}</div>
           <Divider />
           <Toolbar className={classes.toolbar}>
             <QuoteFilter />
@@ -78,12 +72,6 @@ const styles = (theme: Theme) =>
   createStyles({
     root: {
       display: "flex"
-    },
-    avatar: {
-      margin: 10
-    },
-    inline: {
-      display: "inline"
     },
     toolbarIcon: {
       display: "flex",

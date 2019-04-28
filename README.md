@@ -53,3 +53,5 @@ http://localhost:3004/api/quotes?authorName_like=fo
 ### Performance
 
 [memoize list](https://react-window.now.sh/#/examples/list/memoized-list-items)
+
+https://github.com/mobxjs/mobx/issues/1935

@@ -1,6 +1,9 @@
 import { action, observable } from "mobx";
 import QuoteModel from "../models/QuoteModel";
 import { loadAll, QuotesResponse, searchByAuthor, searchById, searchByText } from "../services";
+import RootStore from "./RootStore";
+
+type SearchBy = "author" | "text" | "id";
 
 export default class QuoteStore {
   @observable quotes: Array<QuoteModel> = [];
@@ -12,7 +15,7 @@ export default class QuoteStore {
   nextPage = -1;
   loadMoreItems: any;
 
-  constructor() {}
+  constructor(private rootStore: RootStore) {}
 
   @action
   selectQuote(id: number) {
@@ -29,7 +32,7 @@ export default class QuoteStore {
   }
 
   @action
-  async search(by: "author" | "text" | "id", value?: string) {
+  async search(by: SearchBy, value?: string) {
     if (!value) {
       return;
     }
@@ -53,7 +56,7 @@ export default class QuoteStore {
   }
 
   @action
-  async filterItem(by: "author" | "text" | "id", value?: string) {
+  async filterItem(by: SearchBy, value?: string) {
     this.clearAll();
     this.loadMoreItems = () => this.search(by, value);
     return this.loadMoreItems();
