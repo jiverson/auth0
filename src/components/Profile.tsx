@@ -5,12 +5,14 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { inject, observer } from "mobx-react";
 import React, { Component, Fragment } from "react";
 import AuthStore from "../stores/AuthStore";
+import QuoteStore from "../stores/QuoteStore";
 
 interface Props extends WithStyles<typeof styles> {
   authStore?: AuthStore;
+  store?: QuoteStore;
 }
 
-@inject("authStore")
+@inject("authStore", "store")
 @observer
 class Profile extends Component<Props> {
   componentWillMount() {
@@ -26,6 +28,7 @@ class Profile extends Component<Props> {
     const { classes } = this.props;
     const { userProfile } = this.props.authStore!;
     const name = userProfile && userProfile.nickname;
+    const { loadMyQuotes, isMyQuoteList, loadQuotes } = this.props.store!;
     return (
       <Fragment>
         {name && <Avatar className={classes.avatar}>{name.charAt(0)}</Avatar>}
@@ -33,10 +36,30 @@ class Profile extends Component<Props> {
           {name}
         </Typography>
         <div className={classes.spacer} />
-        <Button size="small" className={classes.download} variant="contained" color="secondary">
-          <CloudDownloadIcon className={classes.downloadIcon} fontSize="small" />
-          my quotes
-        </Button>
+        {!isMyQuoteList && (
+          <Button
+            size="small"
+            className={classes.download}
+            variant="contained"
+            color="secondary"
+            onClick={loadMyQuotes.bind(this.props.store!)}
+          >
+            <CloudDownloadIcon className={classes.downloadIcon} fontSize="small" />
+            my quotes
+          </Button>
+        )}
+        {isMyQuoteList && (
+          <Button
+            size="small"
+            className={classes.download}
+            variant="contained"
+            color="secondary"
+            onClick={loadQuotes.bind(this.props.store!)}
+          >
+            <CloudDownloadIcon className={classes.downloadIcon} fontSize="small" />
+            all quotes
+          </Button>
+        )}
       </Fragment>
     );
   }

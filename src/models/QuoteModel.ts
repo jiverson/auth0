@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 
 export default class QuoteModel {
-  readonly id: number;
+  readonly id: number | string;
   @observable text: string;
   @observable authorName: string;
 

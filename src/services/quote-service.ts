@@ -2,13 +2,8 @@ import queryString from "query-string";
 import { ALL_QUOTES_APIS, Env, QUOTE_PAGE_SIZE } from "../constants";
 import QuoteModel from "../models/QuoteModel";
 
-// const API = ALL_QUOTES_APIS[Env.DEV];
 const API = ALL_QUOTES_APIS[Env.PROD];
 const pageSize = QUOTE_PAGE_SIZE;
-// GET /api/quotes?authorName=AlBeRt
-// GET /api/quotes?text=wAnT
-// GET /api/quotes?sortBy=-authorName,text
-// GET /api/quotes/:id
 
 type Pagination = {
   page: number;
@@ -54,4 +49,107 @@ async function callService(url: string): Promise<QuotesResponse> {
   // const response = await fetch(`${API}${url}`);
 
   return await fetch(`${API}${url}`).then((response) => response.json());
+}
+
+export async function myQuotes(): Promise<Array<QuoteModel>> {
+  const query = `{
+    quotes {
+      id
+      authorName
+      text
+    }
+  }`;
+
+  return callGraphService(JSON.stringify({ query }))
+    .then((response) => response.json())
+    .then(({ data }) => data.quotes);
+}
+
+export async function createMyQuotes(authorName: string, text: string) {
+  const query = `{
+    mutation {
+      createQuote(quote: { authorName: $authorName, text: $text }) {
+        id
+        authorName
+      }
+    }
+  }`;
+
+  const body = JSON.stringify({
+    query,
+    variables: {
+      authorName,
+      text
+    }
+  });
+
+  return callGraphService(body)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
+export async function deleteMyQuote(id: number | string) {
+  const query = `{
+    mutation {
+      deleteQuote(id: $id) {
+        id
+        authorName
+      }
+    }
+  }`;
+
+  const body = JSON.stringify({
+    query,
+    variables: {
+      id
+    }
+  });
+
+  return callGraphService(body)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
+export async function updateMyQuote(id: number | string, authorName: string, text: string) {
+  const query = `{
+    mutation {
+      updateQuote(
+        id: $id
+        quote: { authorName: $authorName, text: $text }
+      ) {
+        id
+      }
+    }
+
+  }`;
+
+  const body = JSON.stringify({
+    query,
+    variables: {
+      id,
+      authorName,
+      text
+    }
+  });
+
+  return callGraphService(body)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
+async function callGraphService(body: string): Promise<any> {
+  return await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body
+  });
 }

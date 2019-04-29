@@ -7,7 +7,7 @@ import QuoteModel from "../models/QuoteModel";
 
 export type DataType = {
   items: Array<QuoteModel>;
-  onItemSelect: (id: number) => void;
+  onItemSelect: (id: number | string) => void;
 };
 
 interface Props extends WithStyles<typeof styles> {

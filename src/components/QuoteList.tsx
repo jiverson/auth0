@@ -17,7 +17,7 @@ interface Props extends WithStyles<typeof styles> {
 class QuoteList extends Component<Props> {
   itemStatusMap = {};
 
-  handleSelectedItem = (id?: number) => {
+  handleSelectedItem = (id?: number | string) => {
     if (id) {
       this.props.store!.selectQuote(id);
     }
