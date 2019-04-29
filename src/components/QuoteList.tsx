@@ -48,7 +48,7 @@ class QuoteList extends Component<Props> {
   };
 
   render() {
-    /* TODO: NTH
+    /* TODO: Nice to have
      * Currently we assume not to know how many we got back from the server
      * the reason is that if we actually use row count we are banging on the service
      * if you decide to keep scrolling. There is implementation where you do not

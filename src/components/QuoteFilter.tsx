@@ -21,10 +21,13 @@ class QuoteFilter extends Component<Props> {
     const store = this.props.store!;
     this.filterItem = debounce(({ target }) => {
       store.filterItem("author", target.value);
-    }, 1000);
+    }, 500);
   }
 
   handleInputChange = (e) => {
+    if (!e.target.value) {
+      // TODO: Nice to have - add in empty list set
+    }
     if (e.target.value.length < QUOTE_MIN_SEARCH) {
       return;
     }
@@ -34,7 +37,6 @@ class QuoteFilter extends Component<Props> {
 
   render() {
     const { classes } = this.props;
-
     return (
       <Paper className={classes.root} elevation={1}>
         <InputBase onChange={this.handleInputChange} className={classes.input} placeholder="Filter by author..." />

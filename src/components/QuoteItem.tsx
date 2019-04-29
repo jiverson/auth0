@@ -1,7 +1,7 @@
 import { createStyles, Theme, Typography } from "@material-ui/core";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import QuoteModel from "../models/QuoteModel";
 import QuoteStore from "../stores/QuoteStore";
 
@@ -16,7 +16,7 @@ class QuoteItem extends Component<Props> {
     const { classes } = this.props;
     const store = this.props.store!;
     return (
-      <>
+      <Fragment>
         {store.selectedQuote && (
           <div>
             <Typography variant="h4" gutterBottom>
@@ -25,7 +25,7 @@ class QuoteItem extends Component<Props> {
             <Typography variant="h6">"{store.selectedQuote.text}"</Typography>
           </div>
         )}
-      </>
+      </Fragment>
     );
   }
 }

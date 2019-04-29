@@ -19,7 +19,7 @@ const theme = createMuiTheme({
       main: "#eb5424"
     },
     secondary: {
-      main: "#eb5424" // not sure
+      main: "#009E74" // not sure
     }
   }
 });

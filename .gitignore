@@ -64,3 +64,4 @@ typings/
 NOTES.md
 db.json
 routes.json
+*.tmp
