@@ -20,11 +20,8 @@ interface Props extends WithStyles<typeof styles> {
 @inject("store", "authStore")
 @observer
 class App extends Component<Props> {
-  allQuotes = [];
-
   render() {
     const { classes } = this.props;
-    const store = this.props.store!;
     const { isAuthenticated, login } = this.props.authStore!;
     return (
       <div className={classes.root}>
@@ -33,8 +30,9 @@ class App extends Component<Props> {
             <Typography variant="h6" color="inherit" noWrap className={classes.title}>
               do not "quote" me
             </Typography>
-            {isAuthenticated && <Button color="inherit">Log out</Button>}
-            {!isAuthenticated && (
+            {isAuthenticated ? (
+              <Button color="inherit">Log out</Button>
+            ) : (
               <Button color="inherit" onClick={login.bind(this)}>
                 Login
               </Button>

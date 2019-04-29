@@ -1,7 +1,17 @@
 import { action, computed, observable } from "mobx";
 import { QuoteListFilter, QUOTE_LIST_FILTER_TITLES } from "../constants";
 import QuoteModel from "../models/QuoteModel";
-import { loadAll, myQuotes, QuotesResponse, searchByAuthor, searchById, searchByText } from "../services";
+import {
+  createMyQuote,
+  deleteMyQuote,
+  loadAll,
+  myQuotes,
+  QuotesResponse,
+  searchByAuthor,
+  searchById,
+  searchByText,
+  updateMyQuote
+} from "../services";
 import RootStore from "./RootStore";
 
 type SearchBy = "author" | "text" | "id";
@@ -69,14 +79,6 @@ export default class QuoteStore {
     return this.loadMoreItems();
   }
 
-  @action
-  async loadMyQuotes(): Promise<any> {
-    this.quoteListFilter = QUOTE_LIST_FILTER_TITLES[QuoteListFilter.MINE];
-    this.clearAll();
-    const quotes = await myQuotes();
-    this.quotes = [].concat(quotes);
-  }
-
   async loadItems() {
     this.isNextPageLoading = true;
     const response = await loadAll(this.nextPage);
@@ -85,9 +87,42 @@ export default class QuoteStore {
   }
 
   async loadQuotes(): Promise<any> {
+    this.clearAll();
     this.quoteListFilter = QUOTE_LIST_FILTER_TITLES[QuoteListFilter.ALL];
     this.loadMoreItems = () => this.loadItems();
     return this.loadMoreItems();
+  }
+
+  //@action.bound
+  @action
+  async loadMyQuotes(): Promise<any> {
+    this.quoteListFilter = QUOTE_LIST_FILTER_TITLES[QuoteListFilter.MINE];
+    this.clearAll();
+    const quotes = await myQuotes();
+    this.quotes = [...quotes];
+  }
+
+  @action
+  async updateMyQuote(id: number | string, authorName: string, text: string) {
+    await updateMyQuote(id.toString(), authorName, text);
+    const oldQuote = this.quotes.find((q) => q.id === id);
+    // TODO: Not updating list item
+    oldQuote.authorName = authorName;
+    oldQuote.text = text;
+  }
+
+  @action
+  async createMyQuote(authorName: string, text: string) {
+    const quote = await createMyQuote(authorName, text);
+    this.quotes = [...this.quotes, quote];
+    this.selectQuote(quote.id);
+  }
+
+  @action
+  async deleteMyQuote(id: number | string) {
+    const { id: deletedId } = await deleteMyQuote(id.toString());
+    this.quotes = [...this.quotes.filter((quote) => quote.id !== deletedId)];
+    this.selectQuote(this.quotes[0].id);
   }
 
   parseResponse(response: QuotesResponse, list: Array<QuoteModel>) {
@@ -95,6 +130,6 @@ export default class QuoteStore {
     this.rowCount = pagination.rowCount;
     this.hasNextPage = pagination.page < pagination.pageCount;
     this.nextPage = this.hasNextPage ? pagination.page + 1 : pagination.page;
-    this.quotes = [...list].concat(results);
+    this.quotes = [...list, ...results];
   }
 }

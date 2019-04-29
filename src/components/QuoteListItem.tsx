@@ -2,7 +2,7 @@ import { createStyles, Theme } from "@material-ui/core";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import QuoteModel from "../models/QuoteModel";
 
 export type DataType = {
@@ -19,7 +19,7 @@ interface Props extends WithStyles<typeof styles> {
 /* TODO: NTH
  * Add in a proper loading animation.
  * */
-class QuoteListItem extends PureComponent<Props> {
+class QuoteListItem extends Component<Props> {
   render() {
     const {
       data: { items, onItemSelect },

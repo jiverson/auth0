@@ -65,82 +65,54 @@ export async function myQuotes(): Promise<Array<QuoteModel>> {
     .then(({ data }) => data.quotes);
 }
 
-export async function createMyQuotes(authorName: string, text: string) {
-  const query = `{
+export async function createMyQuote(authorName: string, text: string): Promise<QuoteModel> {
+  const query = `
     mutation {
-      createQuote(quote: { authorName: $authorName, text: $text }) {
+      createQuote(quote: { authorName: "${authorName}", text: "${text}" }) {
         id
         authorName
+        text
       }
     }
-  }`;
+  `;
 
-  const body = JSON.stringify({
-    query,
-    variables: {
-      authorName,
-      text
-    }
-  });
-
+  const body = JSON.stringify({ query });
   return callGraphService(body)
     .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
+    .then(({ data }) => data.createQuote);
 }
 
-export async function deleteMyQuote(id: number | string) {
-  const query = `{
+export async function deleteMyQuote(id: string): Promise<Partial<QuoteModel>> {
+  const query = `
     mutation {
-      deleteQuote(id: $id) {
+      deleteQuote(id: "${id}") {
         id
-        authorName
       }
     }
-  }`;
+  `;
 
-  const body = JSON.stringify({
-    query,
-    variables: {
-      id
-    }
-  });
-
+  const body = JSON.stringify({ query });
   return callGraphService(body)
     .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
+    .then(({ data }) => data.deleteQuote);
 }
 
-export async function updateMyQuote(id: number | string, authorName: string, text: string) {
-  const query = `{
+export async function updateMyQuote(id: string, authorName: string, text: string): Promise<Partial<QuoteModel>> {
+  const query = `
     mutation {
       updateQuote(
-        id: $id
-        quote: { authorName: $authorName, text: $text }
+        id: "${id}"
+        quote: { authorName: "${authorName}", text: "${text}" }
       ) {
         id
       }
     }
+  `;
 
-  }`;
-
-  const body = JSON.stringify({
-    query,
-    variables: {
-      id,
-      authorName,
-      text
-    }
-  });
-
+  const body = JSON.stringify({ query });
   return callGraphService(body)
     .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
+    .then(({ data }) => data.updateQuote);
 }
 
 async function callGraphService(body: string): Promise<any> {
