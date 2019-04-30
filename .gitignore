@@ -59,9 +59,3 @@ typings/
 
 # next.js build output
 .next
-
-# custom
-NOTES.md
-db.json
-routes.json
-*.tmp

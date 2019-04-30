@@ -1,5 +1,5 @@
 {
-  "name": "auth0",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,7 +10,6 @@
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
     "lodash.debounce": "^4.0.8",
-    "lodash.deburr": "^4.1.0",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
     "mobx-react-router": "^4.0.7",
