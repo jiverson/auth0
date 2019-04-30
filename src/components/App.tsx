@@ -22,7 +22,8 @@ interface Props extends WithStyles<typeof styles> {
 class App extends Component<Props> {
   render() {
     const { classes } = this.props;
-    const { isAuthenticated, login } = this.props.authStore!;
+    const { isAuthenticated, login, logout } = this.props.authStore!;
+    const store = this.props.store!;
     return (
       <div className={classes.root}>
         <AppBar position="absolute" className={classes.appbar}>
@@ -31,7 +32,9 @@ class App extends Component<Props> {
               do not "quote" me
             </Typography>
             {isAuthenticated ? (
-              <Button color="inherit">Log out</Button>
+              <Button color="inherit" onClick={logout.bind(this)}>
+                Log out
+              </Button>
             ) : (
               <Button color="inherit" onClick={login.bind(this)}>
                 Login
@@ -47,9 +50,11 @@ class App extends Component<Props> {
         >
           <div className={classes.toolbarIcon}>{isAuthenticated && <Profile />}</div>
           <Divider />
-          <Toolbar className={classes.toolbar}>
-            <QuoteFilter />
-          </Toolbar>
+          {!store.isMyQuoteList && (
+            <Toolbar className={classes.toolbar}>
+              <QuoteFilter />
+            </Toolbar>
+          )}
           <Divider />
           <QuoteList />
         </Drawer>

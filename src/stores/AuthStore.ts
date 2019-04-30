@@ -15,24 +15,23 @@ export default class AuthStore {
     clientID: AUTH_CONFIG.clientId,
     redirectUri: AUTH_CONFIG.callbackUrl,
     responseType: "token id_token",
-    scope: "openid profile"
+    audience: "http://localhost:4000/graphql",
+    scope: "openid profile read:quotes"
   });
 
   constructor(private rootStore: RootStore) {
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.handleAuthentication = this.handleAuthentication.bind(this);
-    this.getAccessToken = this.getAccessToken.bind(this);
     this.getIdToken = this.getIdToken.bind(this);
     this.renewSession = this.renewSession.bind(this);
     this.getProfile = this.getProfile.bind(this);
     this.scheduleRenewal();
   }
 
+  @action.bound
   login() {
     this.auth0.authorize();
   }
 
+  @action.bound
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
@@ -82,9 +81,10 @@ export default class AuthStore {
     });
   }
 
-  @action
+  @action.bound
   getProfile(cb) {
     this.auth0.client.userInfo(this.accessToken, (err, profile) => {
+      console.log(profile);
       if (profile) {
         this.userProfile = profile;
       }
@@ -92,6 +92,7 @@ export default class AuthStore {
     });
   }
 
+  @action.bound
   logout() {
     // Remove tokens and expiry time
     this.accessToken = null;
@@ -112,7 +113,7 @@ export default class AuthStore {
     });
 
     // navigate to the home route
-    this.rootStore.routing.history.replace("/");
+    this.rootStore.routing.history.replace("/home");
   }
 
   @computed

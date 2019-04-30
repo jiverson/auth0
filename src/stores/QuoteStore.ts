@@ -93,18 +93,28 @@ export default class QuoteStore {
     return this.loadMoreItems();
   }
 
+  parseResponse(response: QuotesResponse, list: Array<QuoteModel>) {
+    const { results, pagination } = response;
+    this.rowCount = pagination.rowCount;
+    this.hasNextPage = pagination.page < pagination.pageCount;
+    this.nextPage = this.hasNextPage ? pagination.page + 1 : pagination.page;
+    this.quotes = [...list, ...results];
+  }
+
   //@action.bound
   @action
   async loadMyQuotes(): Promise<any> {
+    const accessToken = this.rootStore.auth.getAccessToken();
     this.quoteListFilter = QUOTE_LIST_FILTER_TITLES[QuoteListFilter.MINE];
     this.clearAll();
-    const quotes = await myQuotes();
+    const quotes = await myQuotes(accessToken);
     this.quotes = [...quotes];
   }
 
   @action
   async updateMyQuote(id: number | string, authorName: string, text: string) {
-    await updateMyQuote(id.toString(), authorName, text);
+    const accessToken = this.rootStore.auth.getAccessToken();
+    await updateMyQuote(accessToken, id.toString(), authorName, text);
     const oldQuote = this.quotes.find((q) => q.id === id);
     // TODO: Not updating list item
     oldQuote.authorName = authorName;
@@ -113,23 +123,17 @@ export default class QuoteStore {
 
   @action
   async createMyQuote(authorName: string, text: string) {
-    const quote = await createMyQuote(authorName, text);
+    const accessToken = this.rootStore.auth.getAccessToken();
+    const quote = await createMyQuote(accessToken, authorName, text);
     this.quotes = [...this.quotes, quote];
     this.selectQuote(quote.id);
   }
 
   @action
   async deleteMyQuote(id: number | string) {
-    const { id: deletedId } = await deleteMyQuote(id.toString());
+    const accessToken = this.rootStore.auth.getAccessToken();
+    const { id: deletedId } = await deleteMyQuote(accessToken, id.toString());
     this.quotes = [...this.quotes.filter((quote) => quote.id !== deletedId)];
     this.selectQuote(this.quotes[0].id);
-  }
-
-  parseResponse(response: QuotesResponse, list: Array<QuoteModel>) {
-    const { results, pagination } = response;
-    this.rowCount = pagination.rowCount;
-    this.hasNextPage = pagination.page < pagination.pageCount;
-    this.nextPage = this.hasNextPage ? pagination.page + 1 : pagination.page;
-    this.quotes = [...list, ...results];
   }
 }

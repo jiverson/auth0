@@ -9,6 +9,7 @@ import { Router } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import App from "./components/App";
 import Callback from "./pages/Callback";
+import Home from "./pages/Home";
 import RootStore from "./stores/RootStore";
 
 const browserHistory = createBrowserHistory();
@@ -27,7 +28,7 @@ ReactDOM.render(
       <Router history={history}>
         <Switch>
           <Route exact path="/" component={App} />
-          {/* <Route exact path="/home" component={Home} /> */}
+          <Route exact path="/home" component={Home} />
           <Route exact path="/callback" component={Callback} />
         </Switch>
       </Router>

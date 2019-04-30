@@ -3,6 +3,7 @@ import { ALL_QUOTES_APIS, Env, QUOTE_PAGE_SIZE } from "../constants";
 import QuoteModel from "../models/QuoteModel";
 
 const API = ALL_QUOTES_APIS[Env.PROD];
+const GRAPH = ALL_QUOTES_APIS[Env.GRAPH];
 const pageSize = QUOTE_PAGE_SIZE;
 
 type Pagination = {
@@ -46,12 +47,10 @@ export async function searchByText(text: string, page: number): Promise<QuotesRe
 }
 
 async function callService(url: string): Promise<QuotesResponse> {
-  // const response = await fetch(`${API}${url}`);
-
   return await fetch(`${API}${url}`).then((response) => response.json());
 }
 
-export async function myQuotes(): Promise<Array<QuoteModel>> {
+export async function myQuotes(accessToken: string): Promise<Array<QuoteModel>> {
   const query = `{
     quotes {
       id
@@ -60,12 +59,13 @@ export async function myQuotes(): Promise<Array<QuoteModel>> {
     }
   }`;
 
-  return callGraphService(JSON.stringify({ query }))
+  const body = JSON.stringify({ query });
+  return callGraphService(accessToken, body)
     .then((response) => response.json())
     .then(({ data }) => data.quotes);
 }
 
-export async function createMyQuote(authorName: string, text: string): Promise<QuoteModel> {
+export async function createMyQuote(accessToken: string, authorName: string, text: string): Promise<QuoteModel> {
   const query = `
     mutation {
       createQuote(quote: { authorName: "${authorName}", text: "${text}" }) {
@@ -77,12 +77,12 @@ export async function createMyQuote(authorName: string, text: string): Promise<Q
   `;
 
   const body = JSON.stringify({ query });
-  return callGraphService(body)
+  return callGraphService(accessToken, body)
     .then((response) => response.json())
     .then(({ data }) => data.createQuote);
 }
 
-export async function deleteMyQuote(id: string): Promise<Partial<QuoteModel>> {
+export async function deleteMyQuote(accessToken: string, id: string): Promise<Partial<QuoteModel>> {
   const query = `
     mutation {
       deleteQuote(id: "${id}") {
@@ -92,12 +92,17 @@ export async function deleteMyQuote(id: string): Promise<Partial<QuoteModel>> {
   `;
 
   const body = JSON.stringify({ query });
-  return callGraphService(body)
+  return callGraphService(accessToken, body)
     .then((response) => response.json())
     .then(({ data }) => data.deleteQuote);
 }
 
-export async function updateMyQuote(id: string, authorName: string, text: string): Promise<Partial<QuoteModel>> {
+export async function updateMyQuote(
+  accessToken: string,
+  id: string,
+  authorName: string,
+  text: string
+): Promise<Partial<QuoteModel>> {
   const query = `
     mutation {
       updateQuote(
@@ -110,17 +115,18 @@ export async function updateMyQuote(id: string, authorName: string, text: string
   `;
 
   const body = JSON.stringify({ query });
-  return callGraphService(body)
+  return callGraphService(accessToken, body)
     .then((response) => response.json())
     .then(({ data }) => data.updateQuote);
 }
 
-async function callGraphService(body: string): Promise<any> {
-  return await fetch("http://localhost:4000/graphql", {
+export async function callGraphService(accessToken: string, body: string): Promise<any> {
+  return await fetch(`${GRAPH}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json"
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`
     },
     body
   });
